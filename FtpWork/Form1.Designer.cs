@@ -28,30 +28,34 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.listRemoteFile = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.listBox2 = new System.Windows.Forms.ListBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.listLocalFile = new System.Windows.Forms.ListBox();
+            this.btnLocalToRemote = new System.Windows.Forms.Button();
+            this.btnRemoteToLocal = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.tbFtpHost = new System.Windows.Forms.TextBox();
+            this.tbFtpUserName = new System.Windows.Forms.TextBox();
+            this.tbPassword = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.listBox3 = new System.Windows.Forms.ListBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.btnFtpConnect = new System.Windows.Forms.Button();
+            this.lblLocalDirPath = new System.Windows.Forms.Label();
+            this.lblRemoteDirPath = new System.Windows.Forms.Label();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // listBox1
+            // listRemoteFile
             // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.ItemHeight = 15;
-            this.listBox1.Location = new System.Drawing.Point(12, 50);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(578, 94);
-            this.listBox1.TabIndex = 0;
+            this.listRemoteFile.FormattingEnabled = true;
+            this.listRemoteFile.ItemHeight = 15;
+            this.listRemoteFile.Location = new System.Drawing.Point(12, 50);
+            this.listRemoteFile.Name = "listRemoteFile";
+            this.listRemoteFile.Size = new System.Drawing.Size(578, 94);
+            this.listRemoteFile.TabIndex = 0;
+            this.listRemoteFile.DoubleClick += new System.EventHandler(this.listRemoteFile_DoubleClick);
             // 
             // label1
             // 
@@ -63,46 +67,42 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "Remote";
             // 
-            // listBox2
+            // listLocalFile
             // 
-            this.listBox2.FormattingEnabled = true;
-            this.listBox2.ItemHeight = 15;
-            this.listBox2.Location = new System.Drawing.Point(12, 233);
-            this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(578, 94);
-            this.listBox2.TabIndex = 0;
+            this.listLocalFile.FormattingEnabled = true;
+            this.listLocalFile.ItemHeight = 15;
+            this.listLocalFile.Location = new System.Drawing.Point(12, 233);
+            this.listLocalFile.Name = "listLocalFile";
+            this.listLocalFile.Size = new System.Drawing.Size(578, 94);
+            this.listLocalFile.TabIndex = 0;
+            this.listLocalFile.DoubleClick += new System.EventHandler(this.listLocalFile_DoubleClick);
             // 
-            // button1
+            // btnLocalToRemote
             // 
-            this.button1.Location = new System.Drawing.Point(144, 163);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "△";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btnLocalToRemote.Enabled = false;
+            this.btnLocalToRemote.Location = new System.Drawing.Point(144, 163);
+            this.btnLocalToRemote.Name = "btnLocalToRemote";
+            this.btnLocalToRemote.Size = new System.Drawing.Size(75, 23);
+            this.btnLocalToRemote.TabIndex = 2;
+            this.btnLocalToRemote.Text = "△";
+            this.btnLocalToRemote.UseVisualStyleBackColor = true;
+            this.btnLocalToRemote.Click += new System.EventHandler(this.btnLocalToRemote_Click);
             // 
-            // button2
+            // btnRemoteToLocal
             // 
-            this.button2.Location = new System.Drawing.Point(392, 163);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "▽";
-            this.button2.UseVisualStyleBackColor = true;
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(12, 352);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(578, 23);
-            this.button3.TabIndex = 3;
-            this.button3.Text = "button3";
-            this.button3.UseVisualStyleBackColor = true;
+            this.btnRemoteToLocal.Enabled = false;
+            this.btnRemoteToLocal.Location = new System.Drawing.Point(392, 163);
+            this.btnRemoteToLocal.Name = "btnRemoteToLocal";
+            this.btnRemoteToLocal.Size = new System.Drawing.Size(75, 23);
+            this.btnRemoteToLocal.TabIndex = 2;
+            this.btnRemoteToLocal.Text = "▽";
+            this.btnRemoteToLocal.UseVisualStyleBackColor = true;
+            this.btnRemoteToLocal.Click += new System.EventHandler(this.btnRemoteToLocal_Click);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(24, 405);
+            this.label2.Location = new System.Drawing.Point(10, 22);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(38, 15);
             this.label2.TabIndex = 4;
@@ -111,7 +111,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(188, 405);
+            this.label3.Location = new System.Drawing.Point(174, 22);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(78, 15);
             this.label3.TabIndex = 4;
@@ -120,32 +120,36 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(395, 405);
+            this.label4.Location = new System.Drawing.Point(319, 22);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(72, 15);
             this.label4.TabIndex = 4;
             this.label4.Text = "Password";
             // 
-            // textBox1
+            // tbFtpHost
             // 
-            this.textBox1.Location = new System.Drawing.Point(68, 402);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 25);
-            this.textBox1.TabIndex = 5;
+            this.tbFtpHost.Location = new System.Drawing.Point(54, 19);
+            this.tbFtpHost.Name = "tbFtpHost";
+            this.tbFtpHost.Size = new System.Drawing.Size(114, 25);
+            this.tbFtpHost.TabIndex = 5;
+            this.tbFtpHost.Text = "192.168.0.100";
             // 
-            // textBox2
+            // tbFtpUserName
             // 
-            this.textBox2.Location = new System.Drawing.Point(272, 402);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 25);
-            this.textBox2.TabIndex = 6;
+            this.tbFtpUserName.Location = new System.Drawing.Point(258, 19);
+            this.tbFtpUserName.Name = "tbFtpUserName";
+            this.tbFtpUserName.Size = new System.Drawing.Size(55, 25);
+            this.tbFtpUserName.TabIndex = 6;
+            this.tbFtpUserName.Text = "sujin";
             // 
-            // textBox3
+            // tbPassword
             // 
-            this.textBox3.Location = new System.Drawing.Point(473, 402);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 25);
-            this.textBox3.TabIndex = 7;
+            this.tbPassword.Location = new System.Drawing.Point(397, 19);
+            this.tbPassword.Name = "tbPassword";
+            this.tbPassword.Size = new System.Drawing.Size(55, 25);
+            this.tbPassword.TabIndex = 7;
+            this.tbPassword.Text = "aprtmdnpf05!";
+            this.tbPassword.UseSystemPasswordChar = true;
             // 
             // label5
             // 
@@ -157,42 +161,65 @@
             this.label5.TabIndex = 1;
             this.label5.Text = "Local";
             // 
-            // listBox3
+            // panel1
             // 
-            this.listBox3.FormattingEnabled = true;
-            this.listBox3.ItemHeight = 15;
-            this.listBox3.Items.AddRange(new object[] {
-            "하나",
-            "둘",
-            "셋",
-            "넷"});
-            this.listBox3.Location = new System.Drawing.Point(27, 452);
-            this.listBox3.Name = "listBox3";
-            this.listBox3.Size = new System.Drawing.Size(546, 79);
-            this.listBox3.TabIndex = 8;
-            this.listBox3.SelectedIndexChanged += new System.EventHandler(this.listBox3_SelectedIndexChanged);
+            this.panel1.Controls.Add(this.btnFtpConnect);
+            this.panel1.Controls.Add(this.label2);
+            this.panel1.Controls.Add(this.tbPassword);
+            this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.tbFtpUserName);
+            this.panel1.Controls.Add(this.label4);
+            this.panel1.Controls.Add(this.tbFtpHost);
+            this.panel1.Location = new System.Drawing.Point(12, 354);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(578, 61);
+            this.panel1.TabIndex = 8;
+            // 
+            // btnFtpConnect
+            // 
+            this.btnFtpConnect.Location = new System.Drawing.Point(477, 19);
+            this.btnFtpConnect.Name = "btnFtpConnect";
+            this.btnFtpConnect.Size = new System.Drawing.Size(84, 25);
+            this.btnFtpConnect.TabIndex = 8;
+            this.btnFtpConnect.Text = "CONNECT";
+            this.btnFtpConnect.UseVisualStyleBackColor = true;
+            this.btnFtpConnect.Click += new System.EventHandler(this.btnFtpConnect_Click);
+            // 
+            // lblLocalDirPath
+            // 
+            this.lblLocalDirPath.AutoSize = true;
+            this.lblLocalDirPath.Location = new System.Drawing.Point(101, 205);
+            this.lblLocalDirPath.Name = "lblLocalDirPath";
+            this.lblLocalDirPath.Size = new System.Drawing.Size(52, 15);
+            this.lblLocalDirPath.TabIndex = 9;
+            this.lblLocalDirPath.Text = "D:/test";
+            // 
+            // lblRemoteDirPath
+            // 
+            this.lblRemoteDirPath.AutoSize = true;
+            this.lblRemoteDirPath.Location = new System.Drawing.Point(101, 23);
+            this.lblRemoteDirPath.Name = "lblRemoteDirPath";
+            this.lblRemoteDirPath.Size = new System.Drawing.Size(0, 15);
+            this.lblRemoteDirPath.TabIndex = 9;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(602, 544);
-            this.Controls.Add(this.listBox3);
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.ClientSize = new System.Drawing.Size(728, 642);
+            this.Controls.Add(this.lblRemoteDirPath);
+            this.Controls.Add(this.lblLocalDirPath);
+            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.btnRemoteToLocal);
+            this.Controls.Add(this.btnLocalToRemote);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.listBox2);
-            this.Controls.Add(this.listBox1);
+            this.Controls.Add(this.listLocalFile);
+            this.Controls.Add(this.listRemoteFile);
             this.Name = "MainForm";
             this.Text = "Uploader";
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -200,20 +227,22 @@
 
         #endregion
 
-        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.ListBox listRemoteFile;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ListBox listBox2;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.ListBox listLocalFile;
+        private System.Windows.Forms.Button btnLocalToRemote;
+        private System.Windows.Forms.Button btnRemoteToLocal;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox tbFtpHost;
+        private System.Windows.Forms.TextBox tbFtpUserName;
+        private System.Windows.Forms.TextBox tbPassword;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.ListBox listBox3;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button btnFtpConnect;
+        private System.Windows.Forms.Label lblLocalDirPath;
+        private System.Windows.Forms.Label lblRemoteDirPath;
     }
 }
 
