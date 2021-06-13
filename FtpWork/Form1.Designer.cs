@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.listRemoteFile = new System.Windows.Forms.ListBox();
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.label1 = new System.Windows.Forms.Label();
-            this.listLocalFile = new System.Windows.Forms.ListBox();
             this.btnLocalToRemote = new System.Windows.Forms.Button();
             this.btnRemoteToLocal = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
@@ -44,43 +44,30 @@
             this.btnFtpConnect = new System.Windows.Forms.Button();
             this.lblLocalDirPath = new System.Windows.Forms.Label();
             this.lblRemoteDirPath = new System.Windows.Forms.Label();
+            this.listRemoteFile = new System.Windows.Forms.ListView();
+            this.columnRemoteName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnRemoteSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.listLocalFile = new System.Windows.Forms.ListView();
+            this.columnLocalName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnLocalSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.iconList = new System.Windows.Forms.ImageList(this.components);
             this.panel1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // listRemoteFile
-            // 
-            this.listRemoteFile.FormattingEnabled = true;
-            this.listRemoteFile.ItemHeight = 15;
-            this.listRemoteFile.Location = new System.Drawing.Point(12, 50);
-            this.listRemoteFile.Name = "listRemoteFile";
-            this.listRemoteFile.Size = new System.Drawing.Size(578, 94);
-            this.listRemoteFile.TabIndex = 0;
-            this.listRemoteFile.DoubleClick += new System.EventHandler(this.listRemoteFile_DoubleClick);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label1.Location = new System.Drawing.Point(12, 23);
+            this.label1.Location = new System.Drawing.Point(12, 99);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(63, 15);
             this.label1.TabIndex = 1;
             this.label1.Text = "Remote";
             // 
-            // listLocalFile
-            // 
-            this.listLocalFile.FormattingEnabled = true;
-            this.listLocalFile.ItemHeight = 15;
-            this.listLocalFile.Location = new System.Drawing.Point(12, 233);
-            this.listLocalFile.Name = "listLocalFile";
-            this.listLocalFile.Size = new System.Drawing.Size(578, 94);
-            this.listLocalFile.TabIndex = 0;
-            this.listLocalFile.DoubleClick += new System.EventHandler(this.listLocalFile_DoubleClick);
-            // 
             // btnLocalToRemote
             // 
             this.btnLocalToRemote.Enabled = false;
-            this.btnLocalToRemote.Location = new System.Drawing.Point(144, 163);
+            this.btnLocalToRemote.Location = new System.Drawing.Point(140, 396);
             this.btnLocalToRemote.Name = "btnLocalToRemote";
             this.btnLocalToRemote.Size = new System.Drawing.Size(75, 23);
             this.btnLocalToRemote.TabIndex = 2;
@@ -91,7 +78,7 @@
             // btnRemoteToLocal
             // 
             this.btnRemoteToLocal.Enabled = false;
-            this.btnRemoteToLocal.Location = new System.Drawing.Point(392, 163);
+            this.btnRemoteToLocal.Location = new System.Drawing.Point(390, 396);
             this.btnRemoteToLocal.Name = "btnRemoteToLocal";
             this.btnRemoteToLocal.Size = new System.Drawing.Size(75, 23);
             this.btnRemoteToLocal.TabIndex = 2;
@@ -155,7 +142,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label5.Location = new System.Drawing.Point(12, 205);
+            this.label5.Location = new System.Drawing.Point(12, 444);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(48, 15);
             this.label5.TabIndex = 1;
@@ -170,9 +157,9 @@
             this.panel1.Controls.Add(this.tbFtpUserName);
             this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.tbFtpHost);
-            this.panel1.Location = new System.Drawing.Point(12, 354);
+            this.panel1.Location = new System.Drawing.Point(12, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(578, 61);
+            this.panel1.Size = new System.Drawing.Size(577, 61);
             this.panel1.TabIndex = 8;
             // 
             // btnFtpConnect
@@ -188,7 +175,7 @@
             // lblLocalDirPath
             // 
             this.lblLocalDirPath.AutoSize = true;
-            this.lblLocalDirPath.Location = new System.Drawing.Point(101, 205);
+            this.lblLocalDirPath.Location = new System.Drawing.Point(101, 444);
             this.lblLocalDirPath.Name = "lblLocalDirPath";
             this.lblLocalDirPath.Size = new System.Drawing.Size(52, 15);
             this.lblLocalDirPath.TabIndex = 9;
@@ -197,16 +184,73 @@
             // lblRemoteDirPath
             // 
             this.lblRemoteDirPath.AutoSize = true;
-            this.lblRemoteDirPath.Location = new System.Drawing.Point(101, 23);
+            this.lblRemoteDirPath.Location = new System.Drawing.Point(101, 99);
             this.lblRemoteDirPath.Name = "lblRemoteDirPath";
             this.lblRemoteDirPath.Size = new System.Drawing.Size(0, 15);
             this.lblRemoteDirPath.TabIndex = 9;
+            // 
+            // listRemoteFile
+            // 
+            this.listRemoteFile.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnRemoteName,
+            this.columnRemoteSize});
+            this.listRemoteFile.Location = new System.Drawing.Point(12, 128);
+            this.listRemoteFile.Name = "listRemoteFile";
+            this.listRemoteFile.Size = new System.Drawing.Size(577, 250);
+            this.listRemoteFile.TabIndex = 10;
+            this.listRemoteFile.UseCompatibleStateImageBehavior = false;
+            this.listRemoteFile.View = System.Windows.Forms.View.Details;
+            this.listRemoteFile.DoubleClick += new System.EventHandler(this.listRemoteFile_DoubleClick);
+            // 
+            // columnRemoteName
+            // 
+            this.columnRemoteName.Text = "Name";
+            this.columnRemoteName.Width = 300;
+            // 
+            // columnRemoteSize
+            // 
+            this.columnRemoteSize.Text = "Size";
+            this.columnRemoteSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnRemoteSize.Width = 100;
+            // 
+            // listLocalFile
+            // 
+            this.listLocalFile.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnLocalName,
+            this.columnLocalSize});
+            this.listLocalFile.Location = new System.Drawing.Point(12, 471);
+            this.listLocalFile.Name = "listLocalFile";
+            this.listLocalFile.Size = new System.Drawing.Size(577, 250);
+            this.listLocalFile.TabIndex = 11;
+            this.listLocalFile.UseCompatibleStateImageBehavior = false;
+            this.listLocalFile.View = System.Windows.Forms.View.Details;
+            this.listLocalFile.DoubleClick += new System.EventHandler(this.listLocalFile_DoubleClick);
+            // 
+            // columnLocalName
+            // 
+            this.columnLocalName.Text = "Name";
+            this.columnLocalName.Width = 300;
+            // 
+            // columnLocalSize
+            // 
+            this.columnLocalSize.Text = "Size";
+            this.columnLocalSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnLocalSize.Width = 100;
+            // 
+            // iconList
+            // 
+            this.iconList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("iconList.ImageStream")));
+            this.iconList.TransparentColor = System.Drawing.Color.Transparent;
+            this.iconList.Images.SetKeyName(0, "file.png");
+            this.iconList.Images.SetKeyName(1, "folder.png");
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(728, 642);
+            this.ClientSize = new System.Drawing.Size(601, 737);
+            this.Controls.Add(this.listLocalFile);
+            this.Controls.Add(this.listRemoteFile);
             this.Controls.Add(this.lblRemoteDirPath);
             this.Controls.Add(this.lblLocalDirPath);
             this.Controls.Add(this.panel1);
@@ -214,8 +258,8 @@
             this.Controls.Add(this.btnLocalToRemote);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.listLocalFile);
-            this.Controls.Add(this.listRemoteFile);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "Uploader";
             this.panel1.ResumeLayout(false);
@@ -226,10 +270,7 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.ListBox listRemoteFile;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ListBox listLocalFile;
         private System.Windows.Forms.Button btnLocalToRemote;
         private System.Windows.Forms.Button btnRemoteToLocal;
         private System.Windows.Forms.Label label2;
@@ -243,6 +284,13 @@
         private System.Windows.Forms.Button btnFtpConnect;
         private System.Windows.Forms.Label lblLocalDirPath;
         private System.Windows.Forms.Label lblRemoteDirPath;
+        private System.Windows.Forms.ListView listRemoteFile;
+        private System.Windows.Forms.ListView listLocalFile;
+        private System.Windows.Forms.ColumnHeader columnRemoteName;
+        private System.Windows.Forms.ColumnHeader columnRemoteSize;
+        private System.Windows.Forms.ColumnHeader columnLocalName;
+        private System.Windows.Forms.ColumnHeader columnLocalSize;
+        private System.Windows.Forms.ImageList iconList;
     }
 }
 

@@ -21,7 +21,10 @@ namespace FtpWork
         public MainForm()
         {
             InitializeComponent();
-
+            
+            listLocalFile.SmallImageList = iconList;
+            listRemoteFile.SmallImageList = iconList;
+            
             loadLocalDirList();
         }
 
@@ -41,10 +44,17 @@ namespace FtpWork
                 return;
             }
 
-            foreach (var item in listLocalFile.SelectedItems)
+            try
             {
-                Stream fileStream = new FileStream(lblLocalDirPath.Text + "/" + item.ToString(), FileMode.Open);
-                m_sftpClient.UploadFile(fileStream, lblRemoteDirPath.Text + "/" + item.ToString());
+                foreach (var item in listLocalFile.SelectedItems)
+                {
+                    Stream fileStream = new FileStream(lblLocalDirPath.Text + "/" + item.ToString(), FileMode.Open);
+                    m_sftpClient.UploadFile(fileStream, lblRemoteDirPath.Text + "/" + item.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
             loadRemoteDirList();
         }
@@ -60,10 +70,17 @@ namespace FtpWork
                 return;
             }
 
-            foreach(var item in listRemoteFile.SelectedItems)
+            try
             {
-                Stream fileStream = File.Create(lblLocalDirPath.Text + "/" + item.ToString());
-                m_sftpClient.DownloadFile(lblRemoteDirPath.Text + "/" + item.ToString(), fileStream);
+                foreach (var item in listRemoteFile.SelectedItems)
+                {
+                    Stream fileStream = File.Create(lblLocalDirPath.Text + "/" + item.ToString());
+                    m_sftpClient.DownloadFile(lblRemoteDirPath.Text + "/" + item.ToString(), fileStream);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
             loadLocalDirList();
         }
@@ -83,15 +100,13 @@ namespace FtpWork
                     m_sftpClient.ChangeDirectory("/home/sujin");
                     lblRemoteDirPath.Text = "/home/sujin";
                     loadRemoteDirList();
-
-                    btnFtpConnect.Enabled = false;
+                
                     btnRemoteToLocal.Enabled = true;
                     btnLocalToRemote.Enabled = true;
                 }
                 else
                 {
                     Console.WriteLine("connect failed");
-                    btnFtpConnect.Enabled = true;
                     btnRemoteToLocal.Enabled = false;
                     btnLocalToRemote.Enabled = false;
                 }
@@ -110,36 +125,129 @@ namespace FtpWork
             }
 
             listRemoteFile.Items.Clear();
-            foreach (var entry in m_sftpClient.ListDirectory(lblRemoteDirPath.Text))
+            
+            try
             {
-                if (!entry.IsDirectory)
+                foreach (var entry in m_sftpClient.ListDirectory(lblRemoteDirPath.Text))
                 {
-                    listRemoteFile.Items.Add(entry.Name);
+                    if (entry.IsDirectory)
+                    {
+                        String FileNameOnly = entry.Name;
+
+                        string[] items = new string[] { FileNameOnly, "" };
+                        ListViewItem lvi = new ListViewItem(items, 1);
+                        listRemoteFile.Items.Add(lvi);
+                    }
                 }
+                foreach (var entry in m_sftpClient.ListDirectory(lblRemoteDirPath.Text))
+                {
+                    if (entry.IsRegularFile)
+                    {
+                        String FileNameOnly = entry.Name;
+                        String FileSize = entry.Length.ToString() + "B";
+
+                        string[] items = new string[] { FileNameOnly, FileSize };
+                        ListViewItem lvi = new ListViewItem(items, 0);
+                        listRemoteFile.Items.Add(lvi);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
         }
 
         public void loadLocalDirList()
         {
             listLocalFile.Items.Clear();
+            
+            listLocalFile.Items.Add(new ListViewItem(new string[] { "..", "" }, 1));
+
             System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(lblLocalDirPath.Text);
+            foreach (System.IO.DirectoryInfo Dir in di.GetDirectories())
+            {
+                String FileNameOnly = Dir.Name;
+
+                string[] items = new string[] { FileNameOnly, "" };
+                ListViewItem lvi = new ListViewItem(items, 1);
+                listLocalFile.Items.Add(lvi);
+            }
             foreach (System.IO.FileInfo File in di.GetFiles())
             {
                 String FileNameOnly = File.Name.Substring(0, File.Name.Length - 4);
                 String FullFileName = File.FullName;
+                String FileSize = File.Length.ToString() + "B";
 
-                listLocalFile.Items.Add(FileNameOnly);
+                string[] items = new string[] { FileNameOnly, FileSize };
+                ListViewItem lvi = new ListViewItem(items, 0);
+                listLocalFile.Items.Add(lvi);
             }
         }
 
         private void listRemoteFile_DoubleClick(object sender, EventArgs e)
         {
-
+            if (listRemoteFile.SelectedItems[0].Text == ".")
+            {
+                loadRemoteDirList();
+                return;
+            }
+            if (listRemoteFile.SelectedItems[0].Text == "..")
+            {
+                lblRemoteDirPath.Text = get_parent_dir_path(lblRemoteDirPath.Text);
+                loadRemoteDirList();
+                return;
+            }
+            if (listRemoteFile.SelectedItems[0].ImageIndex == 1)
+            {
+                lblRemoteDirPath.Text += "/" + listRemoteFile.SelectedItems[0].Text;
+                loadRemoteDirList();
+            }
         }
 
         private void listLocalFile_DoubleClick(object sender, EventArgs e)
         {
+            if (listLocalFile.SelectedItems[0].Text == ".")
+            {
+                loadLocalDirList();
+                return;
+            }
+            if (listLocalFile.SelectedItems[0].Text == "..")
+            {
+                lblLocalDirPath.Text = get_parent_dir_path(lblLocalDirPath.Text);
+                loadLocalDirList();
+                return;
+            }
+            if (listLocalFile.SelectedItems[0].ImageIndex == 1)
+            {
+                lblLocalDirPath.Text += "/" + listLocalFile.SelectedItems[0].Text;
+                loadLocalDirList();
+            }
+        }
 
+        private string get_parent_dir_path(string path)
+        {
+            // notice that i used two separators windows style "\\" and linux "/" (for bad formed paths)
+            // We make sure to remove extra unneeded characters.
+            string trim = path.TrimEnd('/', '\\');
+            int index = trim.LastIndexOfAny(new char[] { '\\', '/' });
+
+            // now if index is >= 0 that means we have at least one parent directory, otherwise the given path is the root most.
+            if (index >= 0)
+            {
+                if(path.Remove(index).Last() == ':')
+                {
+                    return path.Remove(index) + "/";
+                }
+                else
+                {
+                    return path.Remove(index);
+                }
+            }
+            else
+            {
+                return path;
+            }
         }
     }
 }
