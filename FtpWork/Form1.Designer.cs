@@ -51,6 +51,12 @@
             this.columnLocalName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnLocalSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.iconList = new System.Windows.Forms.ImageList(this.components);
+            this.listProgressStatus = new System.Windows.Forms.ListView();
+            this.progress = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.FileName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.label6 = new System.Windows.Forms.Label();
+            this.btnStatusClear = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -98,7 +104,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(174, 22);
+            this.label3.Location = new System.Drawing.Point(203, 22);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(78, 15);
             this.label3.TabIndex = 4;
@@ -107,7 +113,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(319, 22);
+            this.label4.Location = new System.Drawing.Point(411, 22);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(72, 15);
             this.label4.TabIndex = 4;
@@ -123,17 +129,17 @@
             // 
             // tbFtpUserName
             // 
-            this.tbFtpUserName.Location = new System.Drawing.Point(258, 19);
+            this.tbFtpUserName.Location = new System.Drawing.Point(287, 19);
             this.tbFtpUserName.Name = "tbFtpUserName";
-            this.tbFtpUserName.Size = new System.Drawing.Size(55, 25);
+            this.tbFtpUserName.Size = new System.Drawing.Size(85, 25);
             this.tbFtpUserName.TabIndex = 6;
             this.tbFtpUserName.Text = "sujin";
             // 
             // tbPassword
             // 
-            this.tbPassword.Location = new System.Drawing.Point(397, 19);
+            this.tbPassword.Location = new System.Drawing.Point(489, 19);
             this.tbPassword.Name = "tbPassword";
-            this.tbPassword.Size = new System.Drawing.Size(55, 25);
+            this.tbPassword.Size = new System.Drawing.Size(107, 25);
             this.tbPassword.TabIndex = 7;
             this.tbPassword.Text = "aprtmdnpf05!";
             this.tbPassword.UseSystemPasswordChar = true;
@@ -159,14 +165,14 @@
             this.panel1.Controls.Add(this.tbFtpHost);
             this.panel1.Location = new System.Drawing.Point(12, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(577, 61);
+            this.panel1.Size = new System.Drawing.Size(808, 61);
             this.panel1.TabIndex = 8;
             // 
             // btnFtpConnect
             // 
-            this.btnFtpConnect.Location = new System.Drawing.Point(477, 19);
+            this.btnFtpConnect.Location = new System.Drawing.Point(655, 19);
             this.btnFtpConnect.Name = "btnFtpConnect";
-            this.btnFtpConnect.Size = new System.Drawing.Size(84, 25);
+            this.btnFtpConnect.Size = new System.Drawing.Size(126, 25);
             this.btnFtpConnect.TabIndex = 8;
             this.btnFtpConnect.Text = "CONNECT";
             this.btnFtpConnect.UseVisualStyleBackColor = true;
@@ -194,6 +200,7 @@
             this.listRemoteFile.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnRemoteName,
             this.columnRemoteSize});
+            this.listRemoteFile.FullRowSelect = true;
             this.listRemoteFile.Location = new System.Drawing.Point(12, 128);
             this.listRemoteFile.Name = "listRemoteFile";
             this.listRemoteFile.Size = new System.Drawing.Size(577, 250);
@@ -218,6 +225,7 @@
             this.listLocalFile.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnLocalName,
             this.columnLocalSize});
+            this.listLocalFile.FullRowSelect = true;
             this.listLocalFile.Location = new System.Drawing.Point(12, 471);
             this.listLocalFile.Name = "listLocalFile";
             this.listLocalFile.Size = new System.Drawing.Size(577, 250);
@@ -244,11 +252,68 @@
             this.iconList.Images.SetKeyName(0, "file.png");
             this.iconList.Images.SetKeyName(1, "folder.png");
             // 
+            // listProgressStatus
+            // 
+            this.listProgressStatus.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.progress,
+            this.FileName});
+            this.listProgressStatus.Location = new System.Drawing.Point(610, 128);
+            this.listProgressStatus.Name = "listProgressStatus";
+            this.listProgressStatus.Size = new System.Drawing.Size(210, 593);
+            this.listProgressStatus.TabIndex = 12;
+            this.listProgressStatus.UseCompatibleStateImageBehavior = false;
+            this.listProgressStatus.View = System.Windows.Forms.View.Details;
+            this.listProgressStatus.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.listProgressStatus_ColumnWidthChanging);
+            // 
+            // progress
+            // 
+            this.progress.Text = "Progress";
+            this.progress.Width = 100;
+            // 
+            // FileName
+            // 
+            this.FileName.Text = "Name";
+            this.FileName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.FileName.Width = 50;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("굴림", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label6.Location = new System.Drawing.Point(607, 99);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(49, 15);
+            this.label6.TabIndex = 1;
+            this.label6.Text = "Status";
+            // 
+            // btnStatusClear
+            // 
+            this.btnStatusClear.Location = new System.Drawing.Point(745, 95);
+            this.btnStatusClear.Name = "btnStatusClear";
+            this.btnStatusClear.Size = new System.Drawing.Size(75, 23);
+            this.btnStatusClear.TabIndex = 13;
+            this.btnStatusClear.Text = "Clear";
+            this.btnStatusClear.UseVisualStyleBackColor = true;
+            this.btnStatusClear.Click += new System.EventHandler(this.btnStatusClear_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(685, 95);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(54, 23);
+            this.button1.TabIndex = 14;
+            this.button1.Text = "TEST";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(601, 737);
+            this.ClientSize = new System.Drawing.Size(832, 737);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnStatusClear);
+            this.Controls.Add(this.listProgressStatus);
             this.Controls.Add(this.listLocalFile);
             this.Controls.Add(this.listRemoteFile);
             this.Controls.Add(this.lblRemoteDirPath);
@@ -257,6 +322,7 @@
             this.Controls.Add(this.btnRemoteToLocal);
             this.Controls.Add(this.btnLocalToRemote);
             this.Controls.Add(this.label5);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -291,6 +357,12 @@
         private System.Windows.Forms.ColumnHeader columnLocalName;
         private System.Windows.Forms.ColumnHeader columnLocalSize;
         private System.Windows.Forms.ImageList iconList;
+        private System.Windows.Forms.ListView listProgressStatus;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button btnStatusClear;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ColumnHeader progress;
+        private System.Windows.Forms.ColumnHeader FileName;
     }
 }
 

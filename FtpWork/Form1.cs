@@ -21,7 +21,9 @@ namespace FtpWork
         public MainForm()
         {
             InitializeComponent();
-            
+
+            listProgressStatus.AutoResizeColumn(1, ColumnHeaderAutoResizeStyle.ColumnContent);
+
             listLocalFile.SmallImageList = iconList;
             listRemoteFile.SmallImageList = iconList;
             
@@ -44,12 +46,22 @@ namespace FtpWork
                 return;
             }
 
+            int count = listLocalFile.SelectedItems.Count;
             try
             {
-                foreach (var item in listLocalFile.SelectedItems)
+                ProgressBar progress = addProgress(listLocalFile.SelectedItems[0].Text);
+                progress.Maximum = count;
+                progress.Value = 0;
+                int current = 0;
+                foreach (ListViewItem item in listLocalFile.SelectedItems)
                 {
-                    Stream fileStream = new FileStream(lblLocalDirPath.Text + "/" + item.ToString(), FileMode.Open);
-                    m_sftpClient.UploadFile(fileStream, lblRemoteDirPath.Text + "/" + item.ToString());
+                    string localPath = lblLocalDirPath.Text + "/" + item.Text;
+                    string remotePath = lblRemoteDirPath.Text + "/" + item.Text;
+                    Stream fileStream = new FileStream(localPath, FileMode.Open);
+                    m_sftpClient.UploadFile(fileStream, remotePath);
+                    fileStream.Close();
+                    current++;
+                    progress.Value = current;
                 }
             }
             catch (Exception ex)
@@ -70,12 +82,22 @@ namespace FtpWork
                 return;
             }
 
+            int count = listRemoteFile.SelectedItems.Count;
             try
             {
-                foreach (var item in listRemoteFile.SelectedItems)
+                ProgressBar progress = addProgress(listRemoteFile.SelectedItems[0].Text);
+                progress.Maximum = count;
+                progress.Value = 0;
+                int current = 0;
+                foreach (ListViewItem item in listRemoteFile.SelectedItems)
                 {
-                    Stream fileStream = File.Create(lblLocalDirPath.Text + "/" + item.ToString());
-                    m_sftpClient.DownloadFile(lblRemoteDirPath.Text + "/" + item.ToString(), fileStream);
+                    string localPath = lblLocalDirPath.Text + "/" + item.Text;
+                    string remotePath = lblRemoteDirPath.Text + "/" + item.Text;
+                    Stream fileStream = File.Create(localPath);
+                    m_sftpClient.DownloadFile(remotePath, fileStream);
+                    fileStream.Close();
+                    current++;
+                    progress.Value = current;
                 }
             }
             catch (Exception ex)
@@ -175,7 +197,7 @@ namespace FtpWork
             }
             foreach (System.IO.FileInfo File in di.GetFiles())
             {
-                String FileNameOnly = File.Name.Substring(0, File.Name.Length - 4);
+                String FileNameOnly = File.Name;
                 String FullFileName = File.FullName;
                 String FileSize = File.Length.ToString() + "B";
 
@@ -247,6 +269,45 @@ namespace FtpWork
             else
             {
                 return path;
+            }
+        }
+
+        private void btnStatusClear_Click(object sender, EventArgs e)
+        {
+            listProgressStatus.Items.Clear();
+            listProgressStatus.Controls.Clear();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            addProgress("Item" + listProgressStatus.Items.Count.ToString());
+        }
+
+        private ProgressBar addProgress(string fileName)
+        {
+            ListViewItem lvi = new ListViewItem();
+            ProgressBar pb = new ProgressBar();
+            lvi.SubItems[0].Text = "ddd";
+            lvi.SubItems.Add(fileName);
+            listProgressStatus.Items.Add(lvi);
+            
+            Rectangle r = lvi.SubItems[0].Bounds;
+            pb.SetBounds(r.X, r.Y, 100, r.Height);
+            pb.Minimum = 0;
+            pb.Maximum = 100;
+            pb.Value = 0;
+            pb.Parent = listProgressStatus;
+            listProgressStatus.Controls.Add(pb);
+
+            return pb;
+        }
+
+        private void listProgressStatus_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            if(e.ColumnIndex==0)
+            {
+                e.NewWidth = listProgressStatus.Columns[e.ColumnIndex].Width;
+                e.Cancel = true;
             }
         }
     }
