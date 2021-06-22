@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Renci.SshNet;
@@ -16,11 +17,20 @@ namespace FtpWork
     public partial class MainForm : Form
     {
         SftpClient m_sftpClient;
+        Thread uploadThread;
+        Thread downloadThread;
+        ulong fileLength;
+        List<ProgressBar> progresList;
+        List<ListViewItem> selectedItems;
+        ProgressBar currentProgress;
         bool connected;
 
         public MainForm()
         {
             InitializeComponent();
+
+            progresList = new List<ProgressBar>();
+            selectedItems = new List<ListViewItem>();
 
             listProgressStatus.AutoResizeColumn(1, ColumnHeaderAutoResizeStyle.ColumnContent);
 
@@ -46,23 +56,23 @@ namespace FtpWork
                 return;
             }
 
-            int count = listLocalFile.SelectedItems.Count;
+            selectedItems.Clear();
+            foreach (ListViewItem item in listLocalFile.SelectedItems)
+            {
+                selectedItems.Add(item);
+            }
+            progresList.Clear();
+            foreach (ListViewItem item in selectedItems)
+            {
+                progresList.Add(addProgress(item.Text));
+            }
+            
             try
             {
-                ProgressBar progress = addProgress(listLocalFile.SelectedItems[0].Text);
-                progress.Maximum = count;
-                progress.Value = 0;
-                int current = 0;
-                foreach (ListViewItem item in listLocalFile.SelectedItems)
-                {
-                    string localPath = lblLocalDirPath.Text + "/" + item.Text;
-                    string remotePath = lblRemoteDirPath.Text + "/" + item.Text;
-                    Stream fileStream = new FileStream(localPath, FileMode.Open);
-                    m_sftpClient.UploadFile(fileStream, remotePath);
-                    fileStream.Close();
-                    current++;
-                    progress.Value = current;
-                }
+                uploadThread = new Thread(() => uploadThreadFunc());
+
+                uploadThread.IsBackground = true;
+                uploadThread.Start();
             }
             catch (Exception ex)
             {
@@ -82,23 +92,23 @@ namespace FtpWork
                 return;
             }
 
-            int count = listRemoteFile.SelectedItems.Count;
+            selectedItems.Clear();
+            foreach(ListViewItem item in listRemoteFile.SelectedItems)
+            {
+                selectedItems.Add(item);
+            }
+            progresList.Clear();
+            foreach (ListViewItem item in selectedItems)
+            {
+                progresList.Add(addProgress(item.Text));
+            }
+
             try
             {
-                ProgressBar progress = addProgress(listRemoteFile.SelectedItems[0].Text);
-                progress.Maximum = count;
-                progress.Value = 0;
-                int current = 0;
-                foreach (ListViewItem item in listRemoteFile.SelectedItems)
-                {
-                    string localPath = lblLocalDirPath.Text + "/" + item.Text;
-                    string remotePath = lblRemoteDirPath.Text + "/" + item.Text;
-                    Stream fileStream = File.Create(localPath);
-                    m_sftpClient.DownloadFile(remotePath, fileStream);
-                    fileStream.Close();
-                    current++;
-                    progress.Value = current;
-                }
+                downloadThread = new Thread(() => downloadThreadFunc());
+
+                downloadThread.IsBackground = true;
+                downloadThread.Start();
             }
             catch (Exception ex)
             {
@@ -300,6 +310,77 @@ namespace FtpWork
             listProgressStatus.Controls.Add(pb);
 
             return pb;
+        }
+
+        private void downloadThreadFunc()
+        {
+            try
+            {
+                int current = 0;
+                foreach (ListViewItem item in selectedItems)
+                {
+                    string localPath = lblLocalDirPath.Text + "/" + item.Text;
+                    string remotePath = lblRemoteDirPath.Text + "/" + item.Text;
+                    Stream fileStream = File.Create(localPath);
+
+                    SftpFile file = m_sftpClient.Get(remotePath);
+                    long file_size = file.Attributes.Size;
+                    InitProgresBar(progresList[current], (ulong)file_size);
+                    m_sftpClient.DownloadFile(remotePath, fileStream, UpdateProgresBar);
+                    fileStream.Close();
+                    current++;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+            }
+
+            this.Invoke(new Action(loadLocalDirList));
+        }
+
+        private void uploadThreadFunc()
+        {
+            try
+            {
+                int current = 0;
+                foreach (ListViewItem item in selectedItems)
+                {
+                    string localPath = lblLocalDirPath.Text + "/" + item.Text;
+                    string remotePath = lblRemoteDirPath.Text + "/" + item.Text;
+                    Stream fileStream = new FileStream(localPath, FileMode.Open);
+
+                    InitProgresBar(progresList[current], (ulong)fileStream.Length);
+                    m_sftpClient.UploadFile(fileStream, remotePath, UpdateProgresBar);
+                    fileStream.Close();
+                    current++;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+            }
+
+            this.Invoke(new Action(loadRemoteDirList));
+        }
+
+        private void InitProgresBar(ProgressBar progress, ulong max)
+        {
+            fileLength = max;
+            currentProgress = progress;
+            // Update progress bar on foreground thread
+            progress.Invoke(
+                (MethodInvoker)delegate { progress.Value = (int)0; progress.Maximum = (int)100; });
+        }
+
+        private void UpdateProgresBar(ulong uploaded)
+        {
+            int percent = (int)((uploaded * 100) / fileLength);
+            // Update progress bar on foreground thread
+            currentProgress.Invoke(
+                (MethodInvoker)delegate { currentProgress.Value = percent; });
         }
 
         private void listProgressStatus_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
