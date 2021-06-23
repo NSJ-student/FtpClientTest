@@ -31,9 +31,7 @@ namespace FtpWork
 
             progresList = new List<ProgressBar>();
             selectedItems = new List<ListViewItem>();
-
-            listProgressStatus.AutoResizeColumn(1, ColumnHeaderAutoResizeStyle.ColumnContent);
-
+            
             listLocalFile.SmallImageList = iconList;
             listRemoteFile.SmallImageList = iconList;
             
@@ -64,7 +62,7 @@ namespace FtpWork
             progresList.Clear();
             foreach (ListViewItem item in selectedItems)
             {
-                progresList.Add(addProgress(item.Text));
+                progresList.Add(addProgress(item.Text, lblLocalDirPath.Text, lblRemoteDirPath.Text));
             }
             
             try
@@ -100,7 +98,7 @@ namespace FtpWork
             progresList.Clear();
             foreach (ListViewItem item in selectedItems)
             {
-                progresList.Add(addProgress(item.Text));
+                progresList.Add(addProgress(item.Text, lblRemoteDirPath.Text, lblLocalDirPath.Text));
             }
 
             try
@@ -287,31 +285,7 @@ namespace FtpWork
             listProgressStatus.Items.Clear();
             listProgressStatus.Controls.Clear();
         }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            addProgress("Item" + listProgressStatus.Items.Count.ToString());
-        }
-
-        private ProgressBar addProgress(string fileName)
-        {
-            ListViewItem lvi = new ListViewItem();
-            ProgressBar pb = new ProgressBar();
-            lvi.SubItems[0].Text = "ddd";
-            lvi.SubItems.Add(fileName);
-            listProgressStatus.Items.Add(lvi);
-            
-            Rectangle r = lvi.SubItems[0].Bounds;
-            pb.SetBounds(r.X, r.Y, 100, r.Height);
-            pb.Minimum = 0;
-            pb.Maximum = 100;
-            pb.Value = 0;
-            pb.Parent = listProgressStatus;
-            listProgressStatus.Controls.Add(pb);
-
-            return pb;
-        }
-
+        
         private void downloadThreadFunc()
         {
             try
@@ -366,6 +340,27 @@ namespace FtpWork
             this.Invoke(new Action(loadRemoteDirList));
         }
 
+        private ProgressBar addProgress(string fileName, string source, string dest)
+        {
+            ListViewItem lvi = new ListViewItem();
+            ProgressBar pb = new ProgressBar();
+            lvi.SubItems[0].Text = "ddd";
+            lvi.SubItems.Add(fileName);
+            lvi.SubItems.Add(source);
+            lvi.SubItems.Add(dest);
+            listProgressStatus.Items.Add(lvi);
+
+            Rectangle r = lvi.SubItems[0].Bounds;
+            pb.SetBounds(r.X, r.Y, 100, r.Height);
+            pb.Minimum = 0;
+            pb.Maximum = 100;
+            pb.Value = 0;
+            pb.Parent = listProgressStatus;
+            listProgressStatus.Controls.Add(pb);
+
+            return pb;
+        }
+
         private void InitProgresBar(ProgressBar progress, ulong max)
         {
             fileLength = max;
@@ -390,6 +385,48 @@ namespace FtpWork
                 e.NewWidth = listProgressStatus.Columns[e.ColumnIndex].Width;
                 e.Cancel = true;
             }
+        }
+
+        private void btnRemoteFileDelete_Click(object sender, EventArgs e)
+        {
+            if (!connected)
+            {
+                return;
+            }
+            if (listRemoteFile.SelectedItems.Count == 0)
+            {
+                return;
+            }
+            
+            try
+            {
+                foreach (ListViewItem item in listRemoteFile.SelectedItems)
+                {
+                    string remotePath = lblRemoteDirPath.Text + "/" + item.Text;
+                    m_sftpClient.Delete(remotePath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            loadRemoteDirList();
+        }
+
+        private void btnLocalFileDelete_Click(object sender, EventArgs e)
+        {
+            if (listLocalFile.SelectedItems.Count == 0)
+            {
+                return;
+            }
+            
+            foreach (ListViewItem item in listLocalFile.SelectedItems)
+            {
+                string localPath = lblLocalDirPath.Text + "/" + item.Text;
+                File.Delete(localPath);
+            }
+            
+            loadLocalDirList();
         }
     }
 }
