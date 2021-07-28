@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -174,7 +174,7 @@ namespace FtpWork
                     if (entry.IsRegularFile)
                     {
                         String FileNameOnly = entry.Name;
-                        String FileSize = entry.Length.ToString() + "B";
+                        String FileSize = entry.Length.ToString("#,##0") + "B";
 
                         string[] items = new string[] { FileNameOnly, FileSize };
                         ListViewItem lvi = new ListViewItem(items, 0);
@@ -207,7 +207,7 @@ namespace FtpWork
             {
                 String FileNameOnly = File.Name;
                 String FullFileName = File.FullName;
-                String FileSize = File.Length.ToString() + "B";
+                String FileSize = File.Length.ToString("#,##0") + "B";
 
                 string[] items = new string[] { FileNameOnly, FileSize };
                 ListViewItem lvi = new ListViewItem(items, 0);
