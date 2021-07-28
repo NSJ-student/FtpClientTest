@@ -18,12 +18,12 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Margin="0">
             <Label Content="Host" VerticalAlignment="Center" Margin="0,0,5,0"/>
-            <TextBox x:Name="txtHost" TextWrapping="Wrap" Text="192.168.20.200" VerticalAlignment="Center" Width="95"/>
+            <TextBox x:Name="txtHost" TextWrapping="Wrap" Text="192.168.0.100" VerticalAlignment="Center" Width="95"/>
             <Label Content="User Name" VerticalAlignment="Center" Margin="20,0,5,0"/>
-            <TextBox x:Name="txtUserName" TextWrapping="Wrap" Text="mik21" Width="95" VerticalAlignment="Center"/>
+            <TextBox x:Name="txtUserName" TextWrapping="Wrap" Text="sujin" Width="95" VerticalAlignment="Center"/>
             <Label Content="Password" VerticalAlignment="Center" Margin="20,0,5,0"/>
-            <PasswordBox x:Name="txtPassword" Password="nvidia" VerticalAlignment="Center" Margin="0,10" Width="95"/>
-            <Button x:Name="btnSftpConnect" Content="CONNECT" Width="100" VerticalAlignment="Center" Margin="20,0,0,0"/>
+            <PasswordBox x:Name="txtPassword" Password="aprtmdnpf05!" VerticalAlignment="Center" Margin="0,10" Width="95"/>
+            <Button x:Name="btnSftpConnect" Content="CONNECT" Width="100" VerticalAlignment="Center" Margin="20,0,0,0" Click="btnSftpConnect_Click"/>
         </StackPanel>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
@@ -39,7 +39,6 @@
                 <ListView.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Upload" Click="listLocalFileContextMenu_OnUpload"/>
-                        <MenuItem Header="Download" Click="listLocalFileContextMenu_OnDownload"/>
                         <MenuItem Header="Delete" Click="listLocalFileContextMenu_OnDelete"/>
                     </ContextMenu>
                 </ListView.ContextMenu>
@@ -81,7 +80,6 @@
             <ListView x:Name="listRemoteFile" Grid.Column="2" Grid.Row="1">
                 <ListView.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Upload" Click="listRemoteFileContextMenu_OnUpload"/>
                         <MenuItem Header="Download" Click="listRemoteFileContextMenu_OnDownload"/>
                         <MenuItem Header="Delete" Click="listRemoteFileContextMenu_OnDelete"/>
                     </ContextMenu>
@@ -138,6 +136,11 @@
             ShowsPreview="True" Grid.Row="2" Height="5"
            />
         <ListView x:Name="listProgressStatus" Grid.Row="3">
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Clear" Click="listProgressStatusContextMenu_OnClear"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Local" Width="200" DisplayMemberBinding="{Binding LocalPath}"/>
@@ -146,7 +149,7 @@
                     <GridViewColumn Header="Progress" Width="200">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <ProgressBar Maximum="100" Value="{Binding Progress}"/>
+                                <ProgressBar Maximum="100" Height="20" Width="200" Value="{Binding Progress}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
