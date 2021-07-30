@@ -32,14 +32,19 @@ namespace SFtpWPF
         UserTxRxInfo currentDownloadtem;
         Thread uploadThread;
         Thread downloadThread;
+        Thread connectThread;
         ulong uploadFileLength;
         ulong downloadFileLength;
+        bool uploadActive;
+        bool downloadActive;
         bool connected;
 
         public MainWindow()
         {
             InitializeComponent();
 
+            uploadActive = false;
+            downloadActive = false;
             listTxRxFile = new List<UserTxRxInfo>();
             loadLocalDirList();
         }
@@ -185,6 +190,10 @@ namespace SFtpWPF
             listProgressStatus.ItemsSource = listTxRxFile;
             ICollectionView view = CollectionViewSource.GetDefaultView(listProgressStatus.ItemsSource);
             view.Refresh();
+            if(uploadActive)
+            {
+                return;
+            }
 
             try
             {
@@ -272,6 +281,10 @@ namespace SFtpWPF
             listProgressStatus.ItemsSource = listTxRxFile;
             ICollectionView view = CollectionViewSource.GetDefaultView(listProgressStatus.ItemsSource);
             view.Refresh();
+            if(downloadActive)
+            {
+                return;
+            }
 
             try
             {
@@ -309,6 +322,14 @@ namespace SFtpWPF
 
         private void listProgressStatusContextMenu_OnClear(object sender, RoutedEventArgs e)
         {
+            if(downloadActive)
+            {
+                return;
+            }
+            if(uploadActive)
+            {
+                return;
+            }
             listTxRxFile.Clear();
             ICollectionView view = CollectionViewSource.GetDefaultView(listProgressStatus.ItemsSource);
             view.Refresh();
@@ -341,25 +362,36 @@ namespace SFtpWPF
 
         private void uploadThreadFunc()
         {
+            uploadActive = true;
             try
             {
-                int current = 0;
-                foreach (UserTxRxInfo item in listTxRxFile)
+                int loop_count = listTxRxFile.Count;
+                bool retry = false;
+                do
                 {
-                    currentUploadItem = null;
-                    if (item.Progress == 0 && item.Dir.Equals("->"))
+                    loop_count = listTxRxFile.Count;
+                    retry = false;
+                    foreach (UserTxRxInfo item in listTxRxFile)
                     {
-                        currentUploadItem = item;
-                        string localPath = item.LocalPath;
-                        string remotePath = item.RemotePath;
-                        Stream fileStream = new FileStream(localPath, FileMode.Open);
+                        currentUploadItem = null;
+                        if (item.Progress == 0 && item.Dir.Equals("->"))
+                        {
+                            currentUploadItem = item;
+                            string localPath = item.LocalPath;
+                            string remotePath = item.RemotePath;
+                            Stream fileStream = new FileStream(localPath, FileMode.Open);
 
-                        uploadFileLength = (ulong)fileStream.Length;
-                        m_sftpClient.UploadFile(fileStream, remotePath, UpdateUploadProgresBar);
-                        fileStream.Close();
+                            uploadFileLength = (ulong)fileStream.Length;
+                            m_sftpClient.UploadFile(fileStream, remotePath, UpdateUploadProgresBar);
+                            fileStream.Close();
+                        }
+                        if(loop_count != listTxRxFile.Count)
+                        {
+                            retry = true;
+                            break;
+                        }
                     }
-                    current++;
-                }
+                } while (retry);
             }
             catch (Exception ex)
             {
@@ -368,31 +400,43 @@ namespace SFtpWPF
             }
 
             Dispatcher.Invoke(new Action(loadRemoteDirList));
+            uploadActive = false;
         }
 
         private void downloadThreadFunc()
         {
+            downloadActive = true;
             try
             {
-                int current = 0;
-                foreach (UserTxRxInfo item in listTxRxFile)
+                int loop_count = listTxRxFile.Count;
+                bool retry = false;
+                do
                 {
-                    currentDownloadtem = null;
-                    if (item.Progress == 0 && item.Dir.Equals("<-"))
+                    loop_count = listTxRxFile.Count;
+                    retry = false;
+                    foreach (UserTxRxInfo item in listTxRxFile)
                     {
-                        currentDownloadtem = item;
-                        string localPath = item.LocalPath;
-                        string remotePath = item.RemotePath;
-                        Stream fileStream = File.Create(localPath);
+                        currentDownloadtem = null;
+                        if (item.Progress == 0 && item.Dir.Equals("<-"))
+                        {
+                            currentDownloadtem = item;
+                            string localPath = item.LocalPath;
+                            string remotePath = item.RemotePath;
+                            Stream fileStream = File.Create(localPath);
 
-                        SftpFile file = m_sftpClient.Get(remotePath);
-                        long file_size = file.Attributes.Size;
-                        downloadFileLength = (ulong)file_size;
-                        m_sftpClient.DownloadFile(remotePath, fileStream, UpdateDownloadProgresBar);
-                        fileStream.Close();
+                            SftpFile file = m_sftpClient.Get(remotePath);
+                            long file_size = file.Attributes.Size;
+                            downloadFileLength = (ulong)file_size;
+                            m_sftpClient.DownloadFile(remotePath, fileStream, UpdateDownloadProgresBar);
+                            fileStream.Close();
+                        }
+                        if (loop_count != listTxRxFile.Count)
+                        {
+                            retry = true;
+                            break;
+                        }
                     }
-                    current++;
-                }
+                } while (retry);
             }
             catch (Exception ex)
             {
@@ -401,6 +445,7 @@ namespace SFtpWPF
             }
 
             Dispatcher.Invoke(new Action(loadLocalDirList));
+            downloadActive = false;
         }
 
         private void UpdateUploadProgresBar(ulong uploaded)
@@ -417,9 +462,9 @@ namespace SFtpWPF
         {
             int percent = (int)((uploaded * 100) / downloadFileLength);
             // Update progress bar on foreground thread
-            if (currentUploadItem != null)
+            if (currentDownloadtem != null)
             {
-                currentUploadItem.Progress = percent;
+                currentDownloadtem.Progress = percent;
             }
         }
 
@@ -431,13 +476,30 @@ namespace SFtpWPF
                 m_sftpClient.KeepAliveInterval = TimeSpan.FromSeconds(60);
                 m_sftpClient.ConnectionInfo.Timeout = TimeSpan.FromMinutes(180);
                 m_sftpClient.OperationTimeout = TimeSpan.FromMinutes(180);
+
+                connectThread = new Thread(() => connectThreadFunc());
+
+                connectThread.IsBackground = true;
+                connectThread.Start();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        private void connectThreadFunc()
+        {
+            Dispatcher.Invoke(new Action(StartStopWait));
+            try
+            {
                 m_sftpClient.Connect();
                 connected = m_sftpClient.IsConnected;
                 if (connected)
                 {
                     m_sftpClient.ChangeDirectory("/home/sujin");
-                    RemoteDirPath.Text = "/home/sujin";
-                    loadRemoteDirList();
+                    Dispatcher.Invoke(delegate() { RemoteDirPath.Text = "/home/sujin";  });
+                    Dispatcher.Invoke(new Action(loadRemoteDirList));
                 }
                 else
                 {
@@ -448,6 +510,14 @@ namespace SFtpWPF
             {
                 Console.WriteLine(ex.ToString());
             }
+
+            Dispatcher.Invoke(new Action(StartStopWait));
+        }
+
+        private void StartStopWait()
+        {
+            LoadingAdorner.IsAdornerVisible = !LoadingAdorner.IsAdornerVisible;
+            listRemoteFile.IsEnabled = !listRemoteFile.IsEnabled;
         }
     }
 

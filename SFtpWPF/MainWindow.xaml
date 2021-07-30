@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ac="clr-namespace:AdornedControl;assembly=AdornedControl"
         xmlns:local="clr-namespace:SFtpWPF"
         mc:Ignorable="d"
         Title="SFTP Client" Height="457" Width="702.512">
@@ -77,42 +78,49 @@
               Background="#FFECECEC" 
               ShowsPreview="True" Width="5" Grid.Column="1" Grid.RowSpan="2"
            />
-            <ListView x:Name="listRemoteFile" Grid.Column="2" Grid.Row="1">
-                <ListView.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Download" Click="listRemoteFileContextMenu_OnDownload"/>
-                        <MenuItem Header="Delete" Click="listRemoteFileContextMenu_OnDelete"/>
-                    </ContextMenu>
-                </ListView.ContextMenu>
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
-                        <Setter Property="VerticalContentAlignment" Value="Stretch"></Setter>
-                        <EventSetter Event="MouseDoubleClick" Handler="listRemoteFileContextMenu_OnDoubleClick"/>
-                    </Style>
-                </ListView.ItemContainerStyle>
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Name" Width="200">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Image Source="{Binding Image}" Width="16" Height="16" Margin="0,0,5,0"/>
-                                        <TextBlock Text="{Binding Name}"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="Size" Width="100">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Size}" HorizontalAlignment="Right"/>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+            <ac:AdornedControl Name="LoadingAdorner"  Grid.Column="2" Grid.Row="1">
+                <ac:AdornedControl.AdornerContent>
+                    <local:LoadingWait></local:LoadingWait>
+                </ac:AdornedControl.AdornerContent>
+
+                <ListView x:Name="listRemoteFile">
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Download" Click="listRemoteFileContextMenu_OnDownload"/>
+                            <MenuItem Header="Delete" Click="listRemoteFileContextMenu_OnDelete"/>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"></Setter>
+                            <EventSetter Event="MouseDoubleClick" Handler="listRemoteFileContextMenu_OnDoubleClick"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Name" Width="200">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{Binding Image}" Width="16" Height="16" Margin="0,0,5,0"/>
+                                            <TextBlock Text="{Binding Name}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Size" Width="100">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Size}" HorizontalAlignment="Right"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+            </ac:AdornedControl>
             <Grid >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
