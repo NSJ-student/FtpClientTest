@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Renci.SshNet;
 using System.Threading;
+using System.IO;
+using System.Xml.Linq;
+using System.Text.RegularExpressions;
 
 namespace SshWinform
 {
@@ -21,6 +24,7 @@ namespace SshWinform
         public Form1()
         {
             InitializeComponent();
+            LoadInit();
         }
 
         private void txtSshCmd_KeyPress(object sender, KeyPressEventArgs e)
@@ -40,9 +44,12 @@ namespace SshWinform
                 {
                     try
                     {
+                        Command_sShell.WriteLine(txtSshCmd.Text);
+                        /*
                         string output = cSSH_Command.CreateCommand(txtSshCmd.Text).Execute();
                         string new_output = output.Replace("\n", Environment.NewLine);
                         txtSshText.AppendText(new_output);
+                        */
                     }
                     catch (Exception ex)
                     {
@@ -114,7 +121,7 @@ namespace SshWinform
                     Console.WriteLine(ex.StackTrace);
                 }
 
-                Thread.Sleep(200);
+                Thread.Sleep(10);
             }
         }
 
@@ -124,14 +131,76 @@ namespace SshWinform
             if (txtSshText.InvokeRequired)
             {
                 // 작업쓰레드인 경우
-                txtSshText.BeginInvoke(new Action(() => txtSshText.Text = data));
+                txtSshText.BeginInvoke(new Action(delegate() {
+                    string str = new Regex(@"\x1B\[[^@-~]*[@-~]").Replace(data, "");
+                    txtSshText.AppendText(str);
+                    txtSshText.ScrollToCaret(); 
+                }));
             }
             else
             {
                 // UI 쓰레드인 경우
-                txtSshText.Text = data;
+                string str = new Regex(@"\x1B\[[^@-~]*[@-~]").Replace(data, "");
+                txtSshText.AppendText(str);
+                txtSshText.ScrollToCaret();
             }
         }
 
+        public void LoadInit()
+        {
+            try
+            {
+                if (File.Exists(".\\ssh_info.xml"))
+                {
+                    var xdoc = XDocument.Load("ssh_info.xml");
+                    var xelements = xdoc.Root.Elements("element");
+
+                    foreach (var xList in xelements)
+                    {
+                        XElement element;
+
+                        element = xList.Element("host");
+                        if (element != null) tbHost.Text = element.Value;
+
+                        element = xList.Element("user_name");
+                        if (element != null) tbUserName.Text = element.Value;
+
+                        element = xList.Element("password");
+                        if (element != null) tbPassword.Text = element.Value;
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+        }
+        public void SaveInit()
+        {
+            try
+            {
+                var root = new XElement("list");
+                var elements = new XElement("element",
+                    new XElement("host", tbHost.Text),
+                    new XElement("user_name", tbUserName.Text),
+                    new XElement("password", tbPassword.Text));
+                root.Add(elements);
+                root.Save("ssh_info.xml");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SaveInit();
+        }
+
+        private void btnLogClear_Click(object sender, EventArgs e)
+        {
+            txtSshText.Clear();
+        }
     }
 }

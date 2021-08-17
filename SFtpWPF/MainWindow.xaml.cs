@@ -13,11 +13,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
-using System.Threading.Tasks;
 using System.IO;
 using System.ComponentModel;
 using Renci.SshNet;
 using Renci.SshNet.Sftp;
+using System.Xml.Linq;
 
 namespace SFtpWPF
 {
@@ -43,6 +43,7 @@ namespace SFtpWPF
         {
             InitializeComponent();
 
+            LoadInit();
             uploadActive = false;
             downloadActive = false;
             listTxRxFile = new List<UserTxRxInfo>();
@@ -497,8 +498,7 @@ namespace SFtpWPF
                 connected = m_sftpClient.IsConnected;
                 if (connected)
                 {
-                    m_sftpClient.ChangeDirectory("/home/sujin");
-                    Dispatcher.Invoke(delegate() { RemoteDirPath.Text = "/home/sujin";  });
+                    Dispatcher.Invoke(delegate() { RemoteDirPath.Text = m_sftpClient.WorkingDirectory;  });
                     Dispatcher.Invoke(new Action(loadRemoteDirList));
                 }
                 else
@@ -518,6 +518,73 @@ namespace SFtpWPF
         {
             LoadingAdorner.IsAdornerVisible = !LoadingAdorner.IsAdornerVisible;
             listRemoteFile.IsEnabled = !listRemoteFile.IsEnabled;
+        }
+
+        public void LoadInit()
+        {
+            try
+            {
+                if (File.Exists(".\\sftp_info.xml"))
+                {
+                    var xdoc = XDocument.Load("sftp_info.xml");
+                    var xelements = xdoc.Root.Elements("element");
+
+                    foreach (var xList in xelements)
+                    {
+                        XElement element;
+
+                        element = xList.Element("host");
+                        if (element != null) txtHost.Text = element.Value;
+
+                        element = xList.Element("user_name");
+                        if (element != null) txtUserName.Text = element.Value;
+
+                        element = xList.Element("password");
+                        if (element != null) txtPassword.Password = element.Value;
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+        }
+        public void SaveInit()
+        {
+            try
+            {
+                var root = new XElement("list");
+                var elements = new XElement("element",
+                    new XElement("host", txtHost.Text),
+                    new XElement("user_name", txtUserName.Text),
+                    new XElement("password", txtPassword.Password));
+                root.Add(elements);
+                root.Save("sftp_info.xml");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            SaveInit();
+        }
+
+        private void txtUserName_GotFocus(object sender, RoutedEventArgs e)
+        {
+            txtUserName.SelectAll();
+        }
+
+        private void txtPassword_GotFocus(object sender, RoutedEventArgs e)
+        {
+            txtPassword.SelectAll();
+        }
+
+        private void txtHost_GotFocus(object sender, RoutedEventArgs e)
+        {
+            txtHost.SelectAll();
         }
     }
 

@@ -6,7 +6,7 @@
         xmlns:ac="clr-namespace:AdornedControl;assembly=AdornedControl"
         xmlns:local="clr-namespace:SFtpWPF"
         mc:Ignorable="d"
-        Title="SFTP Client" Height="457" Width="702.512">
+        Title="SFTP Client" Height="457" Width="702.512" Closing="Window_Closing">
     <Grid Margin="5,0,5,5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="43*"/>
@@ -19,11 +19,11 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Margin="0">
             <Label Content="Host" VerticalAlignment="Center" Margin="0,0,5,0"/>
-            <TextBox x:Name="txtHost" TextWrapping="Wrap" Text="192.168.0.100" VerticalAlignment="Center" Width="95"/>
+            <TextBox x:Name="txtHost" TextWrapping="Wrap" Text="192.168.0.100" VerticalAlignment="Center" Width="95" GotFocus="txtHost_GotFocus"/>
             <Label Content="User Name" VerticalAlignment="Center" Margin="20,0,5,0"/>
-            <TextBox x:Name="txtUserName" TextWrapping="Wrap" Text="sujin" Width="95" VerticalAlignment="Center"/>
+            <TextBox x:Name="txtUserName" TextWrapping="Wrap" Text="sujin" Width="95" VerticalAlignment="Center" GotFocus="txtUserName_GotFocus"/>
             <Label Content="Password" VerticalAlignment="Center" Margin="20,0,5,0"/>
-            <PasswordBox x:Name="txtPassword" Password="aprtmdnpf05!" VerticalAlignment="Center" Margin="0,10" Width="95"/>
+            <PasswordBox x:Name="txtPassword" Password="aprtmdnpf05!" VerticalAlignment="Center" Margin="0,10" Width="95" GotFocus="txtPassword_GotFocus"/>
             <Button x:Name="btnSftpConnect" Content="CONNECT" Width="100" VerticalAlignment="Center" Margin="20,0,0,0" Click="btnSftpConnect_Click"/>
         </StackPanel>
         <Grid Grid.Row="1">

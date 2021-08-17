@@ -127,8 +127,7 @@ namespace FtpWork
                 connected = m_sftpClient.IsConnected;
                 if (connected)
                 {
-                    m_sftpClient.ChangeDirectory("/home/sujin");
-                    lblRemoteDirPath.Text = "/home/sujin";
+                    lblRemoteDirPath.Text = m_sftpClient.WorkingDirectory;
                     loadRemoteDirList();
                 
                     btnRemoteToLocal.Enabled = true;
