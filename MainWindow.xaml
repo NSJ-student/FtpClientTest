@@ -1,0 +1,169 @@
+<Window x:Class="SFtpWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ac="clr-namespace:AdornedControl;assembly=AdornedControl"
+        xmlns:local="clr-namespace:SFtpWPF"
+        mc:Ignorable="d"
+        Title="SFTP Client" Height="457" Width="702.512" Closing="Window_Closing">
+    <Grid Margin="5,0,5,5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="43*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition MinHeight="20"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Margin="0">
+            <Label Content="Host" VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <TextBox x:Name="txtHost" TextWrapping="Wrap" Text="192.168.0.100" VerticalAlignment="Center" Width="95" GotFocus="txtHost_GotFocus"/>
+            <Label Content="User Name" VerticalAlignment="Center" Margin="20,0,5,0"/>
+            <TextBox x:Name="txtUserName" TextWrapping="Wrap" Text="sujin" Width="95" VerticalAlignment="Center" GotFocus="txtUserName_GotFocus"/>
+            <Label Content="Password" VerticalAlignment="Center" Margin="20,0,5,0"/>
+            <PasswordBox x:Name="txtPassword" Password="aprtmdnpf05!" VerticalAlignment="Center" Margin="0,10" Width="95" GotFocus="txtPassword_GotFocus"/>
+            <Button x:Name="btnSftpConnect" Content="CONNECT" Width="100" VerticalAlignment="Center" Margin="20,0,0,0" Click="btnSftpConnect_Click"/>
+        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="50*"/>
+            </Grid.ColumnDefinitions>
+            <ListView x:Name="listLocalFile" Grid.Row="1">
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Upload" Click="listLocalFileContextMenu_OnUpload"/>
+                        <MenuItem Header="Delete" Click="listLocalFileContextMenu_OnDelete"/>
+                    </ContextMenu>
+                </ListView.ContextMenu>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                        <Setter Property="VerticalContentAlignment" Value="Stretch"></Setter>
+                        <EventSetter Event="MouseDoubleClick" Handler="listLocalFileContextMenu_OnDoubleClick"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Name" Width="200">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="{Binding Image}" Width="16" Height="16" Margin="0,0,5,0"/>
+                                        <TextBlock Text="{Binding Name}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Size" Width="100">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Size}" HorizontalAlignment="Right"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <GridSplitter
+              HorizontalAlignment="Center"
+              VerticalAlignment="Stretch"
+              Background="#FFECECEC" 
+              ShowsPreview="True" Width="5" Grid.Column="1" Grid.RowSpan="2"
+           />
+            <ac:AdornedControl Name="LoadingAdorner"  Grid.Column="2" Grid.Row="1">
+                <ac:AdornedControl.AdornerContent>
+                    <local:LoadingWait></local:LoadingWait>
+                </ac:AdornedControl.AdornerContent>
+
+                <ListView x:Name="listRemoteFile">
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Download" Click="listRemoteFileContextMenu_OnDownload"/>
+                            <MenuItem Header="Delete" Click="listRemoteFileContextMenu_OnDelete"/>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                            <Setter Property="VerticalContentAlignment" Value="Stretch"></Setter>
+                            <EventSetter Event="MouseDoubleClick" Handler="listRemoteFileContextMenu_OnDoubleClick"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Name" Width="200">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{Binding Image}" Width="16" Height="16" Margin="0,0,5,0"/>
+                                            <TextBlock Text="{Binding Name}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Size" Width="100">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Size}" HorizontalAlignment="Right"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+            </ac:AdornedControl>
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Local" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" MinWidth="60"/>
+                <TextBox x:Name="LocalDirPath" Height="23" Grid.Column="1" TextWrapping="Wrap" Text="D:/test" HorizontalContentAlignment="Stretch" VerticalAlignment="Center"/>
+            </Grid>
+            <Grid Grid.Column="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Remote" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" MinWidth="60"/>
+                <TextBox x:Name="RemoteDirPath" Height="23" Grid.Column="1" TextWrapping="Wrap" VerticalAlignment="Center"/>
+            </Grid>
+        </Grid>
+        <GridSplitter
+            HorizontalAlignment="Stretch"
+            Background="#FFECECEC" 
+            ShowsPreview="True" Grid.Row="2" Height="5"
+           />
+        <ListView x:Name="listProgressStatus" Grid.Row="3">
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Clear" Click="listProgressStatusContextMenu_OnClear"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Local" Width="200" DisplayMemberBinding="{Binding LocalPath}"/>
+                    <GridViewColumn Header="DIR" Width="50" DisplayMemberBinding="{Binding Dir}"/>
+                    <GridViewColumn Header="Remote" Width="200" DisplayMemberBinding="{Binding RemotePath}"/>
+                    <GridViewColumn Header="Progress" Width="200">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <ProgressBar Maximum="100" Height="20" Width="200" Value="{Binding Progress}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Time" Width="100" DisplayMemberBinding="{Binding Time}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</Window>
