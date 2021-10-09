@@ -497,8 +497,7 @@ namespace SFtpWPF
                 connected = m_sftpClient.IsConnected;
                 if (connected)
                 {
-                    m_sftpClient.ChangeDirectory("/home/sujin");
-                    Dispatcher.Invoke(delegate() { RemoteDirPath.Text = "/home/sujin";  });
+                    Dispatcher.Invoke(delegate() { RemoteDirPath.Text = m_sftpClient.WorkingDirectory;  });
                     Dispatcher.Invoke(new Action(loadRemoteDirList));
                 }
                 else
