@@ -4,7 +4,7 @@
 
 개발 언어: C# winform , WPF
 
-목적: SFTP, SSH 동작 테스트 프로그램
+목적: SFTP, SSH 동작 테스트 프로그램 (https://github.com/NSJ-student/SystemUpgrade 를 만들기위한 테스트)
 
 
 # UI (SFTP Client, WPF)
