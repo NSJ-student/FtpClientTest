@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.txtSshText = new System.Windows.Forms.TextBox();
             this.txtSshCmd = new System.Windows.Forms.TextBox();
             this.btnSshConnect = new System.Windows.Forms.Button();
@@ -196,6 +197,7 @@
             this.ClientSize = new System.Drawing.Size(713, 438);
             this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.MaximizeBox = false;
             this.Name = "Form1";

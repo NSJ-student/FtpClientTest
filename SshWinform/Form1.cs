@@ -24,6 +24,7 @@ namespace SshWinform
         public Form1()
         {
             InitializeComponent();
+            this.Icon = Properties.Resources.ssh;
             LoadInit();
         }
 

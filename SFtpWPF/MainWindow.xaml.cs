@@ -43,6 +43,8 @@ namespace SFtpWPF
         {
             InitializeComponent();
 
+            this.Icon = Properties.Resources.sftp;
+
             LoadInit();
             uploadActive = false;
             downloadActive = false;
